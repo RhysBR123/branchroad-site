@@ -1,10 +1,11 @@
 ---
-import MarketingLayout from '../layouts/MarketingLayout.astro';
-import SiteNav from '../components/shared/SiteNav.astro';
-import SiteFooter from '../components/shared/SiteFooter.astro';
-import FaqAccordion from '../components/shared/FaqAccordion.astro';
-import GlobalScripts from '../components/shared/GlobalScripts.astro';
-import { navLinks } from '../data/site';
+export const prerender = true;
+import MarketingLayout from "../layouts/MarketingLayout.astro";
+import SiteNav from "../components/shared/SiteNav.astro";
+import SiteFooter from "../components/shared/SiteFooter.astro";
+import FaqAccordion from "../components/shared/FaqAccordion.astro";
+import GlobalScripts from "../components/shared/GlobalScripts.astro";
+import { navLinks } from "../data/site";
 import {
   explainerFaq,
   explainerHero,
@@ -12,19 +13,28 @@ import {
   faqSchema,
   processSteps,
   serviceSchema,
-} from '../data/explainer';
+} from "../data/explainer";
 
-import '../styles/site.css';
-import '../styles/explainer.css';
+import "../styles/site.css";
+import "../styles/explainer.css";
 ---
+
 <MarketingLayout
   title="Explainer Video Production for B2B Tech | Branch Road Media"
   description="Explainer video production for B2B tech companies. Live action and animated explainer video production to increase conversion, support sales enablement, and shorten sales cycles."
   ogTitle="Explainer Video Production for B2B Tech | Branch Road Media"
   ogDescription="Conversion-focused explainer video production for B2B tech teams. Strategy, scriptwriting, production, and campaign-ready versions."
 >
-  <script slot="head" type="application/ld+json" set:html={JSON.stringify(serviceSchema)}></script>
-  <script slot="head" type="application/ld+json" set:html={JSON.stringify(faqSchema)}></script>
+  <script
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(serviceSchema)}
+  />
+  <script
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(faqSchema)}
+  />
 
   <SiteNav links={navLinks} />
 
@@ -38,12 +48,18 @@ import '../styles/explainer.css';
 
       <aside class="hero-card reveal">
         <div class="hero-media">
-          <video src={explainerHero.exampleVideo} autoplay muted loop playsinline></video>
+          <video
+            src={explainerHero.exampleVideo}
+            autoplay
+            muted
+            loop
+            playsinline></video>
         </div>
         <div class="hero-card-body">
           <h2>Example explainer</h2>
           <p class="hero-card-copy">
-            A reference clip showing the style, pace, and clarity we aim for in product explainers.
+            A reference clip showing the style, pace, and clarity we aim for in
+            product explainers.
           </p>
           <div class="hero-example-tags">
             <span>Live action + graphics</span>
@@ -52,7 +68,9 @@ import '../styles/explainer.css';
           <div class="hero-price-panel">
             <div class="hero-price-label">Process starting from</div>
             <div class="hero-price-value">£3,500</div>
-            <p class="hero-price-copy">Scope, scripting, and delivery planning before production begins.</p>
+            <p class="hero-price-copy">
+              Scope, scripting, and delivery planning before production begins.
+            </p>
           </div>
           <div class="hero-card-action">
             <a href="#contact" class="btn-primary">Let's talk explainers -></a>
@@ -70,16 +88,18 @@ import '../styles/explainer.css';
           <h2 class="section-title">An explainer for any occasion</h2>
         </div>
         <div class="grid-2">
-          {explainerTypes.map((item) => (
-            <article class="card">
-              <div class="type-example">
-                <video src={item.video} autoplay muted loop playsinline></video>
-                <span class="type-example-label">{item.label}</span>
-              </div>
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
-            </article>
-          ))}
+          {
+            explainerTypes.map((item) => (
+              <article class="card">
+                <div class="type-example">
+                  <video src={item.video} autoplay muted loop playsinline />
+                  <span class="type-example-label">{item.label}</span>
+                </div>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </article>
+            ))
+          }
         </div>
       </div>
     </section>
@@ -89,16 +109,20 @@ import '../styles/explainer.css';
         <div class="container reveal">
           <div class="section-head">
             <div class="section-label">Our process</div>
-            <h2 class="section-title">How we build explainer videos from <em>brief to delivery</em></h2>
+            <h2 class="section-title">
+              How we build explainer videos from <em>brief to delivery</em>
+            </h2>
           </div>
           <div class="process">
-            {processSteps.map((step) => (
-              <article class="step reveal">
-                <div class="step-tag">{step.tag}</div>
-                <h3>{step.title}</h3>
-                <p>{step.description}</p>
-              </article>
-            ))}
+            {
+              processSteps.map((step) => (
+                <article class="step reveal">
+                  <div class="step-tag">{step.tag}</div>
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
+                </article>
+              ))
+            }
           </div>
         </div>
       </section>
@@ -108,11 +132,23 @@ import '../styles/explainer.css';
   <div class="container" id="contact">
     <section class="cta reveal" aria-label="Contact call to action">
       <h2>Ready to start your explainer?</h2>
-      <p>Drop us your email and we will come back to you within 48 hours with next steps.</p>
+      <p>
+        Drop us your email and we will come back to you within 48 hours with
+        next steps.
+      </p>
       <div class="cta-actions">
         <div class="cta-actions-row">
-          <input class="cta-email-input" type="email" name="email" placeholder="Your work email" aria-label="Your work email" />
-          <a href="mailto:hello@branchroad.media?subject=Explainer%20Video%20Project%20Brief" class="btn-primary">Let us explain -></a>
+          <input
+            class="cta-email-input"
+            type="email"
+            name="email"
+            placeholder="Your work email"
+            aria-label="Your work email"
+          />
+          <a
+            href="mailto:hello@branchroad.media?subject=Explainer%20Video%20Project%20Brief"
+            class="btn-primary">Let us explain -></a
+          >
         </div>
         <a href="/" class="btn-secondary">See other video services</a>
       </div>
@@ -124,7 +160,9 @@ import '../styles/explainer.css';
       <div class="container reveal">
         <div class="section-head">
           <div class="section-label">FAQs</div>
-          <h2 class="section-title">Common questions about <em>explainer video production</em></h2>
+          <h2 class="section-title">
+            Common questions about <em>explainer video production</em>
+          </h2>
         </div>
         <FaqAccordion items={explainerFaq} />
       </div>

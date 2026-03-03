@@ -8,8 +8,8 @@ export default defineConfig({
   adapter: netlify(),
   integrations: [
     sanity({
-      projectId: import.meta.env.PUBLIC_SANITY_PROJECT_ID,
-      dataset: import.meta.env.PUBLIC_SANITY_DATASET,
+      projectId: process.env.PUBLIC_SANITY_PROJECT_ID,
+      dataset: process.env.PUBLIC_SANITY_DATASET,
       useCdn: false,
       studioBasePath: '/studio',
     }),
