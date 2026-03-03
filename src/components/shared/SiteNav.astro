@@ -1,0 +1,25 @@
+---
+import type { LinkItem } from '../../data/site';
+
+interface Props {
+  links: LinkItem[];
+  homeHref?: string;
+}
+
+const { links, homeHref = 'https://branchroad.media/' } = Astro.props;
+---
+<nav id="mainNav" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href={homeHref} class="nav-logo">Branch Road<span>.</span></a>
+    <ul class="nav-links" id="navLinks">
+      {links.map((link) => (
+        <li><a href={link.href}>{link.label}</a></li>
+      ))}
+    </ul>
+    <button class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">
+      <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 12h18M3 6h18M3 18h18"></path>
+      </svg>
+    </button>
+  </div>
+</nav>

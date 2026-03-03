@@ -1,0 +1,249 @@
+<script is:inline>
+  (() => {
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    document.querySelectorAll('.reveal, .service-section').forEach((el) => revealObserver.observe(el));
+
+    let statsCounted = false;
+    const statsEl = document.querySelector('.hero-stats');
+    if (statsEl) {
+      const statsObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting || statsCounted) return;
+            statsCounted = true;
+            document.querySelectorAll('.stat-number[data-target]').forEach((el) => {
+              const target = Number(el.getAttribute('data-target') || 0);
+              const suffix = el.getAttribute('data-suffix') || '';
+              const duration = 1800;
+              const start = performance.now();
+
+              const animate = (now) => {
+                const elapsed = now - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.floor(target * eased) + suffix;
+                if (progress < 1) requestAnimationFrame(animate);
+              };
+
+              requestAnimationFrame(animate);
+            });
+          });
+        },
+        { threshold: 0.45 }
+      );
+      statsObserver.observe(statsEl);
+    }
+
+    document.querySelectorAll('[data-faq-toggle]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const item = button.closest('.faq-item');
+        if (!item) return;
+
+        const answer = item.querySelector('.faq-answer');
+        if (!answer) return;
+
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item.open').forEach((openItem) => {
+          openItem.classList.remove('open');
+          const openAnswer = openItem.querySelector('.faq-answer');
+          if (openAnswer) openAnswer.style.maxHeight = '0';
+        });
+
+        if (!isOpen) {
+          item.classList.add('open');
+          answer.style.maxHeight = answer.scrollHeight + 'px';
+        }
+      });
+    });
+
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+    if (mobileMenuBtn && navLinks) {
+      mobileMenuBtn.addEventListener('click', () => {
+        navLinks.classList.toggle('mobile-open');
+        mobileMenuBtn.setAttribute('aria-expanded', navLinks.classList.contains('mobile-open') ? 'true' : 'false');
+      });
+
+      navLinks.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('mobile-open');
+          mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+
+    const nav = document.getElementById('mainNav');
+    if (nav && navLinks && mobileMenuBtn) {
+      let lastScroll = 0;
+      window.addEventListener('scroll', () => {
+        const current = window.pageYOffset;
+        nav.classList.toggle('hidden', current > lastScroll && current > 100);
+        lastScroll = current;
+
+        if (navLinks.classList.contains('mobile-open')) {
+          navLinks.classList.remove('mobile-open');
+          mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    document.querySelectorAll('[data-tilt]').forEach((card) => {
+      card.addEventListener('mousemove', (event) => {
+        const rect = card.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - 0.5;
+        const y = (event.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `perspective(800px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) translateY(-4px)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(800px) rotateY(0) rotateX(0) translateY(0)';
+      });
+    });
+
+    document.querySelectorAll('[data-video-switcher]').forEach((switcher) => {
+      const card = switcher.closest('.service-card');
+      const previewVideo = card ? card.querySelector('.service-card-preview video') : null;
+      if (!previewVideo) return;
+
+      const buttons = switcher.querySelectorAll('button[data-video-src]');
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const nextSrc = button.getAttribute('data-video-src');
+          if (!nextSrc || previewVideo.src === nextSrc) return;
+
+          previewVideo.src = nextSrc;
+          previewVideo.currentTime = 0;
+          const playPromise = previewVideo.play();
+          if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(() => {});
+          }
+
+          buttons.forEach((candidate) => {
+            const isActive = candidate === button;
+            candidate.classList.toggle('active', isActive);
+            candidate.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+          });
+        });
+      });
+    });
+
+    (() => {
+      const buttons = Array.from(document.querySelectorAll('[data-service-option]'));
+      const totalEl = document.getElementById('selectorTotal');
+      const countEl = document.getElementById('selectorCount');
+      const form = document.getElementById('selectorLeadForm');
+      const emailInput = document.getElementById('selectorEmail');
+      const feedbackEl = document.getElementById('selectorFeedback');
+
+      if (!buttons.length || !totalEl || !countEl || !form || !emailInput || !feedbackEl) return;
+
+      const currency = new Intl.NumberFormat('en-GB', {
+        style: 'currency',
+        currency: 'GBP',
+        maximumFractionDigits: 0,
+      });
+
+      const getSelected = () => {
+        return buttons
+          .filter((button) => button.classList.contains('selected'))
+          .map((button) => ({
+            name: button.getAttribute('data-service-name') || 'Service',
+            price: Number(button.getAttribute('data-service-price') || 0),
+          }));
+      };
+
+      const renderTotal = () => {
+        const selected = getSelected();
+        const total = selected.reduce((sum, item) => sum + item.price, 0);
+        totalEl.textContent = currency.format(total);
+        countEl.textContent =
+          selected.length === 0
+            ? 'Pick one or more services to see your total.'
+            : `${selected.length} service${selected.length === 1 ? '' : 's'} selected.`;
+      };
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          button.classList.toggle('selected');
+          button.setAttribute('aria-pressed', button.classList.contains('selected') ? 'true' : 'false');
+          feedbackEl.textContent = '';
+          renderTotal();
+        });
+      });
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const selected = getSelected();
+        if (!selected.length) {
+          feedbackEl.textContent = 'Select at least one service before requesting a pricing plan.';
+          return;
+        }
+
+        if (!(emailInput instanceof HTMLInputElement) || !emailInput.checkValidity()) {
+          feedbackEl.textContent = 'Enter a valid work email address.';
+          if (emailInput instanceof HTMLInputElement) emailInput.focus();
+          return;
+        }
+
+        const total = selected.reduce((sum, item) => sum + item.price, 0);
+        const subject = `Video services enquiry - starting from ${currency.format(total)}`;
+        const lines = [
+          `Email: ${emailInput.value.trim()}`,
+          '',
+          'Selected services:',
+          ...selected.map((item) => `- ${item.name} (${currency.format(item.price)})`),
+          '',
+          `Estimated starting total: ${currency.format(total)}`,
+        ];
+
+        window.location.href = `mailto:hello@branchroad.media?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
+        feedbackEl.textContent = 'Thanks. Your email app is opening with your selected scope.';
+      });
+
+      renderTotal();
+    })();
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxVideo = document.getElementById('lightboxVideo');
+    if (lightbox && lightboxVideo) {
+      document.querySelectorAll('[data-lightbox-trigger]').forEach((trigger) => {
+        trigger.addEventListener('click', () => {
+          const sourceVideo = trigger.querySelector('video');
+          if (sourceVideo) {
+            lightboxVideo.src = sourceVideo.src;
+            lightboxVideo.currentTime = 0;
+            const playPromise = lightboxVideo.play();
+            if (playPromise && typeof playPromise.catch === 'function') {
+              playPromise.catch(() => {});
+            }
+          }
+          lightbox.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        });
+      });
+
+      const closeLightbox = () => {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
+        lightboxVideo.pause();
+        lightboxVideo.src = '';
+      };
+
+      lightbox.addEventListener('click', closeLightbox);
+      const inner = lightbox.querySelector('.lightbox-inner');
+      const closeButton = lightbox.querySelector('.lightbox-close');
+      if (inner) inner.addEventListener('click', (event) => event.stopPropagation());
+      if (closeButton) closeButton.addEventListener('click', closeLightbox);
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeLightbox();
+      });
+    }
+  })();
+</script>

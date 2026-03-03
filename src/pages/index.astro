@@ -1,17 +1,149 @@
 ---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import SiteNav from '../components/shared/SiteNav.astro';
+import SiteFooter from '../components/shared/SiteFooter.astro';
+import FaqAccordion from '../components/shared/FaqAccordion.astro';
+import GlobalScripts from '../components/shared/GlobalScripts.astro';
+import ServiceSection from '../components/home/ServiceSection.astro';
+import { navLinks } from '../data/site';
+import { clientLogos, homeFaq, homeHero, homeStats, selectorOptions, serviceSections } from '../data/home';
 
+import '../styles/site.css';
+import '../styles/home.css';
+
+const tickerLogos = [...clientLogos, ...clientLogos];
 ---
+<MarketingLayout
+  title="B2B Video Production & Animation | Branch Road Media"
+  description="Explainer video production, customer story videos, event videography, and motion graphics animation for B2B tech companies. Documentary-style video that your buyers actually trust."
+  ogTitle="B2B Video Production & Animation | Branch Road Media"
+  ogDescription="Documentary-style video production for B2B tech. Customer stories, explainer videos, event capture, animation, and podcast production."
+>
+  <a href="#customer-stories" class="skip-link">Skip to main content</a>
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+  <div class="hero-video-bg">
+    <video src={homeHero.backgroundVideo} autoplay muted loop playsinline aria-hidden="true"></video>
+  </div>
+
+  <SiteNav links={navLinks} />
+
+  <header class="hero">
+    <div class="hero-badge">{homeHero.badge}</div>
+    <h1>{homeHero.title}</h1>
+    <p class="hero-sub">{homeHero.subtitle}</p>
+    <div class="hero-actions">
+      <a href={homeHero.primaryCta.href} class="btn-primary">{homeHero.primaryCta.label}</a>
+      <a href={homeHero.secondaryCta.href} class="btn-secondary">{homeHero.secondaryCta.label}</a>
+    </div>
+    <div class="hero-stats">
+      {homeStats.map((stat) => (
+        <div class="stat">
+          <div class="stat-number" data-target={stat.target} data-suffix={stat.suffix}>0</div>
+          <div class="stat-label">{stat.label}</div>
+        </div>
+      ))}
+    </div>
+  </header>
+
+  <div class="logo-ticker-section">
+    <div class="logo-ticker-label">
+      We make videos for marketing teams who are tired of marketing videos
+    </div>
+    <div class="logo-ticker">
+      {tickerLogos.map((logo) => (
+        <span class="ticker-item">
+          <img
+            class="ticker-logo"
+            src={logo.src}
+            alt={logo.alt}
+            loading="lazy"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'"
+          />
+          <span class="ticker-fallback">{logo.fallback}</span>
+        </span>
+      ))}
+    </div>
+  </div>
+
+  <div class="jump-nav" id="jumpNav">
+    <div class="jump-nav-inner">
+      {serviceSections.map((service) => (
+        <a href={`#${service.id}`} class="jump-nav-item">
+          <span class="jump-nav-title">{service.jumpLabel}</span>
+          <span class="jump-nav-arrow">v</span>
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <hr class="section-divider" style="margin-top:60px" />
+
+  {serviceSections.map((service) => (
+    <ServiceSection service={service} />
+  ))}
+
+  <div class="faq-wrapper">
+    <section class="section" id="faq" aria-label="Frequently asked questions">
+      <div class="section-label">Frequently asked</div>
+      <h2 class="section-title">Questions <em>we always get</em></h2>
+      <FaqAccordion items={homeFaq} />
+    </section>
+  </div>
+
+  <div class="bottom-cta-wrapper" style="padding-top:var(--section-padding);padding-bottom:var(--section-padding)">
+    <section class="bottom-cta" id="contact">
+      <div class="section-label">Let's talk</div>
+      <h2 class="section-title">Build your video scope</h2>
+      <p>
+        Select the services you need to get an estimated starting point, then drop your email and we'll
+        send back a tailored plan.
+      </p>
+      <div class="selector-prompt">I need...</div>
+      <div class="service-selector-grid" id="serviceSelector">
+        {selectorOptions.map((option) => (
+          <button
+            type="button"
+            class="service-selector-option"
+            data-service-option
+            data-service-name={option.name}
+            data-service-price={option.price}
+            aria-pressed="false"
+          >
+            <span class="service-name">{option.name}</span>
+          </button>
+        ))}
+      </div>
+      <div class="selector-total-wrap">
+        <div class="label">Estimated starting from</div>
+        <div class="amount" id="selectorTotal">£0</div>
+        <div class="meta" id="selectorCount">Pick one or more services to see your total.</div>
+      </div>
+      <form class="selector-lead-form" id="selectorLeadForm" novalidate>
+        <input
+          class="selector-email"
+          id="selectorEmail"
+          type="email"
+          name="email"
+          placeholder="Work email"
+          autocomplete="email"
+          required
+          aria-label="Work email"
+        />
+        <button class="btn-primary" type="submit" style="font-size:1rem;padding:18px 34px">Let's chat -></button>
+      </form>
+      <div class="selector-feedback" id="selectorFeedback" aria-live="polite"></div>
+      <div class="selector-privacy">By submitting, you agree we can contact you about your project scope.</div>
+    </section>
+  </div>
+
+  <SiteFooter />
+
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-inner">
+      <video id="lightboxVideo" controls playsinline></video>
+      <button class="lightbox-close" aria-label="Close video">x</button>
+    </div>
+  </div>
+
+  <GlobalScripts />
+</MarketingLayout>
